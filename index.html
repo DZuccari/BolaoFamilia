@@ -182,7 +182,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const auth = firebase.auth();
-const REF_ROOT = 'bolao2026_familia';
+const REF_ROOT = 'bolao2026';
 const ref = path => db.ref(REF_ROOT + '/' + path);
 
 // ── Palette (60-30-10) ────────────────────────────────────────────────────────
@@ -221,6 +221,21 @@ const FLAGS = {
 const seedLikeTeam=t=>/^\d+/.test(String(t||''));
 const displayTeam=t=>seedLikeTeam(t)?'A Definir':t;
 const fl = t => displayTeam(t)==='A Definir' ? '\u{1F3DF}\uFE0F' : (FLAGS[displayTeam(t)] || '\u{1F3F3}\uFE0F');
+const FLAG_CODES = {
+  'M?xico':'mx','?frica do Sul':'za','Coreia do Sul':'kr','Tch?quia':'cz',
+  'Canad?':'ca','B?snia-Herzegovina':'ba','Catar':'qa','Su??a':'ch',
+  'Brasil':'br','Marrocos':'ma','Haiti':'ht','Esc?cia':'gb-sct',
+  'EUA':'us','Paraguai':'py','Austr?lia':'au','Turquia':'tr',
+  'Alemanha':'de','Cura?ao':'cw','Costa do Marfim':'ci','Equador':'ec',
+  'Pa?ses Baixos':'nl','Jap?o':'jp','Su?cia':'se','Tun?sia':'tn',
+  'B?lgica':'be','Egito':'eg','Ir?':'ir','Nova Zel?ndia':'nz',
+  'Espanha':'es','Cabo Verde':'cv','Ar?bia Saudita':'sa','Uruguai':'uy',
+  'Fran?a':'fr','Senegal':'sn','Iraque':'iq','Noruega':'no',
+  '?ustria':'at','Jord?nia':'jo','Argentina':'ar','Arg?lia':'dz',
+  'Portugal':'pt','RD Congo':'cd','Uzbequist?o':'uz','Col?mbia':'co',
+  'Inglaterra':'gb-eng','Cro?cia':'hr','Gana':'gh','Panam?':'pa'
+};
+const flagCode=t=>FLAG_CODES[displayTeam(t)];
 const ALL_TEAMS = Object.keys(FLAGS).sort();
 const PHASES = ['Grupos','32-avos','Oitavas','Quartas','Semis','3º Lugar','Final'];
 const GROUPS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
@@ -1319,6 +1334,13 @@ function Bolao(){
       <div style={{fontSize:9,color:T.txt3,marginTop:5,textTransform:'uppercase',letterSpacing:.6,fontWeight:900}}>{label}</div>
     </div>
   );
+  const FlagMark=({team,align='left'})=>{
+    const label=displayTeam(team);
+    const code=flagCode(team);
+    if(label==='A Definir') return <span style={{fontSize:34,lineHeight:1}}>???</span>;
+    if(code) return <img src={`https://flagcdn.com/w80/${code}.png`} srcSet={`https://flagcdn.com/w160/${code}.png 2x`} alt={label} title={label} loading="lazy" style={{width:54,height:38,objectFit:'cover',borderRadius:9,border:'1px solid '+T.border,boxShadow:'0 10px 22px rgba(15,23,42,.12)',alignSelf:align==='right'?'flex-end':'flex-start',background:'#fff'}} onError={e=>{e.currentTarget.style.display='none';}}/>;
+    return <span style={{fontSize:40,lineHeight:1}}>{fl(team)}</span>;
+  };
   const GroupStandingCard=({group})=>(
     <div style={{border:'1px solid '+T.border,borderRadius:8,overflow:'hidden',background:'#fff'}}>
       <div style={{background:'#00732E',color:'#fff',display:'flex',alignItems:'center',padding:'8px 12px'}}>
@@ -1387,7 +1409,7 @@ function Bolao(){
         </div>
         <div style={{display:'flex',alignItems:'center',padding:'16px 14px 12px'}}>
           <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'flex-start',gap:4}}>
-            <span style={{fontSize:40,lineHeight:1}}>{fl(m.home)}</span>
+            <FlagMark team={m.home}/>
             <span style={{fontSize:12,fontWeight:700,color:T.txt1,maxWidth:90,lineHeight:1.3,marginTop:2}}>{displayTeam(m.home)}</span>
           </div>
           <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'0 8px',minWidth:130}}>
@@ -1417,7 +1439,7 @@ function Bolao(){
             {!hasR&&<span style={{fontSize:10,color:T.txt3}}>📍 {m.venue}</span>}
           </div>
           <div style={{flex:1,display:'flex',flexDirection:'column',alignItems:'flex-end',gap:4}}>
-            <span style={{fontSize:40,lineHeight:1}}>{fl(m.away)}</span>
+            <FlagMark team={m.away} align="right"/>
             <span style={{fontSize:12,fontWeight:700,color:T.txt1,maxWidth:90,lineHeight:1.3,textAlign:'right',marginTop:2}}>{displayTeam(m.away)}</span>
           </div>
         </div>
