@@ -221,21 +221,12 @@ const FLAGS = {
 const seedLikeTeam=t=>/^\d+/.test(String(t||''));
 const displayTeam=t=>seedLikeTeam(t)?'A Definir':t;
 const fl = t => displayTeam(t)==='A Definir' ? '\u{1F3DF}\uFE0F' : (FLAGS[displayTeam(t)] || '\u{1F3F3}\uFE0F');
-const FLAG_CODES = {
-  'M?xico':'mx','?frica do Sul':'za','Coreia do Sul':'kr','Tch?quia':'cz',
-  'Canad?':'ca','B?snia-Herzegovina':'ba','Catar':'qa','Su??a':'ch',
-  'Brasil':'br','Marrocos':'ma','Haiti':'ht','Esc?cia':'gb-sct',
-  'EUA':'us','Paraguai':'py','Austr?lia':'au','Turquia':'tr',
-  'Alemanha':'de','Cura?ao':'cw','Costa do Marfim':'ci','Equador':'ec',
-  'Pa?ses Baixos':'nl','Jap?o':'jp','Su?cia':'se','Tun?sia':'tn',
-  'B?lgica':'be','Egito':'eg','Ir?':'ir','Nova Zel?ndia':'nz',
-  'Espanha':'es','Cabo Verde':'cv','Ar?bia Saudita':'sa','Uruguai':'uy',
-  'Fran?a':'fr','Senegal':'sn','Iraque':'iq','Noruega':'no',
-  '?ustria':'at','Jord?nia':'jo','Argentina':'ar','Arg?lia':'dz',
-  'Portugal':'pt','RD Congo':'cd','Uzbequist?o':'uz','Col?mbia':'co',
-  'Inglaterra':'gb-eng','Cro?cia':'hr','Gana':'gh','Panam?':'pa'
+const twemojiFlagUrl=t=>{
+  const emoji=fl(t);
+  if(!emoji||displayTeam(t)==='A Definir') return '';
+  const code=Array.from(emoji).map(ch=>ch.codePointAt(0).toString(16)).join('-');
+  return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${code}.svg`;
 };
-const flagCode=t=>FLAG_CODES[displayTeam(t)];
 const ALL_TEAMS = Object.keys(FLAGS).sort();
 const PHASES = ['Grupos','32-avos','Oitavas','Quartas','Semis','3º Lugar','Final'];
 const GROUPS = ['A','B','C','D','E','F','G','H','I','J','K','L'];
@@ -1336,10 +1327,9 @@ function Bolao(){
   );
   const FlagMark=({team,align='left'})=>{
     const label=displayTeam(team);
-    const code=flagCode(team);
+    const url=twemojiFlagUrl(team);
     if(label==='A Definir') return <span style={{fontSize:34,lineHeight:1}}>???</span>;
-    if(code) return <img src={`https://flagcdn.com/w80/${code}.png`} srcSet={`https://flagcdn.com/w160/${code}.png 2x`} alt={label} title={label} loading="lazy" style={{width:54,height:38,objectFit:'cover',borderRadius:9,border:'1px solid '+T.border,boxShadow:'0 10px 22px rgba(15,23,42,.12)',alignSelf:align==='right'?'flex-end':'flex-start',background:'#fff'}} onError={e=>{e.currentTarget.style.display='none';}}/>;
-    return <span style={{fontSize:40,lineHeight:1}}>{fl(team)}</span>;
+    return <span title={label} style={{width:58,height:40,borderRadius:10,border:'1px solid '+T.border,boxShadow:'0 10px 22px rgba(15,23,42,.12)',background:'#fff',display:'inline-flex',alignItems:'center',justifyContent:'center',alignSelf:align==='right'?'flex-end':'flex-start',position:'relative',overflow:'hidden'}}><span style={{fontSize:22,fontWeight:950,color:T.txt1,lineHeight:1}}>{fl(team)}</span>{url&&<img src={url} alt={label} loading="lazy" style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover',background:'#fff'}} onError={e=>{e.currentTarget.style.display='none';}}/>}</span>;
   };
   const GroupStandingCard=({group})=>(
     <div style={{border:'1px solid '+T.border,borderRadius:8,overflow:'hidden',background:'#fff'}}>
