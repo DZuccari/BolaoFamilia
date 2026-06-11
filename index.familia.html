@@ -1264,7 +1264,6 @@ function Bolao(){
   const nextMatch=nextMatches[0]||null;
   const nextUnlockMatch=matches.filter(m=>!predictionOpen(m)&&!matchLocked(m)).sort((a,b)=>unlockAt(a)-unlockAt(b))[0]||null;
   const nextClosingMatch=matches.filter(m=>canEditMatch(m)).sort((a,b)=>new Date(a.dt)-new Date(b.dt))[0]||null;
-  const openToPickCount=groupAvailablePendingCount+knockoutAvailablePendingCount;
   const champDone=!!champPreds[me];
   const longTermMine=longTermFor(me);
   const longTermDone=!!champPreds[me]&&!!longTermMine.topScorer&&!!longTermMine.bestPlayer;
@@ -1309,6 +1308,7 @@ function Bolao(){
   const needsPrediction=m=>!myPredMap[m.id]||myPredMap[m.id].home===''||myPredMap[m.id].away==='';
   const groupAvailablePendingCount=groupAvailableMatches.filter(needsPrediction).length;
   const knockoutAvailablePendingCount=knockoutAvailableMatches.filter(needsPrediction).length;
+  const openToPickCount=groupAvailablePendingCount+knockoutAvailablePendingCount;
   const stageDoneCount=(groupAvailablePendingCount===0?1:0)+(knockoutAvailablePendingCount===0?1:0);
   const actionCount=groupAvailablePendingCount+knockoutAvailablePendingCount;
 
